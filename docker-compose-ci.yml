@@ -1,0 +1,22 @@
+version: '3'
+services:
+  frontend:
+    image: aks07hat/amcart-frontend:latest
+    stdin_open: true
+    container_name: frontend-container
+    expose:
+      - 3000
+    environment:
+      REACT_APP_API_BASE_URL: http://43.205.111.136:8080
+      REACT_APP_ES_BASE_URL: http://43.205.111.136:8082
+    ports:
+      - '3000:3000'
+    networks:
+      - app-network      
+
+networks:
+  app-network:
+    driver: bridge
+    
+volumes:
+  client:

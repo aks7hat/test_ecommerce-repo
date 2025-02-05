@@ -1,0 +1,108 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: root_pass
+      MYSQL_DATABASE: auth_db
+      MYSQL_USER: root_user
+      MYSQL_PASSWORD: root_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql-init/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - app-network
+      
+  elasticsearch:
+    image: elastic/elasticsearch:7.17.26
+    container_name: elastic
+    hostname: elastic
+    ports:
+      - 9200:9200
+      - 9300:9300
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=elastic
+      - network.host=0.0.0.0
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - cluster.name=elastic
+      - discovery.type=single-node
+    networks:
+      - app-network  
+
+  product-service:
+    build:
+      context: .
+      dockerfile: ./Authentication-Service/Dockerfile
+    container_name: product-service
+    environment:
+      host_name: jdbc:mysql://mysql:3306/auth_db
+      db_user: root_user
+      db_pass: root_password
+      redirect_uri_google: http://192.168.1.17:8080/login/oauth2/code/google
+      redirect_uri_github: http://192.168.1.17:8080/login/oauth2/code/github
+      frontend_url: http://frontend:3000
+      es_url: http://es-backend:8082
+      env_variable: ec2
+      google_client_id: abcd
+      google_client_secret: abcd
+      github_client_id: abcd
+      github_client_secret: abcd
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - frontend
+    networks:
+      - app-network
+      
+  es-backend:
+    build:
+      context: .
+      dockerfile: ./ElasticSearch/Dockerfile
+    container_name: es-backend
+    restart: always
+    expose:
+      - 8082
+    ports:
+      - 8082:8082
+    environment:
+      - es_url=http://elasticsearch:9200
+      - env_variable=ec2
+      - frontend_url=http://frontend:3000
+      - host_name=elasticsearch
+      - port_name=9200
+      - http_name=http
+    depends_on:
+      - elasticsearch
+      - frontend
+    networks:
+      - app-network
+      
+  frontend:
+    image: aks07hat/amcart-frontend:latest
+    container_name: frontend-container
+    environment:
+      REACT_APP_API_BASE_URL: http://192.168.1.17:8080
+      REACT_APP_ES_BASE_URL: http://192.168.1.17:8082
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+
+volumes:
+  mysql_data:
+  es_data:
+
+networks:
+  app-network:
+    driver: bridge
