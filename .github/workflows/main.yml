@@ -1,4 +1,4 @@
-name: Continuous Integration and Continuous Delivery
+name: Continuous Integration and Delivery
 
 on:
   push:
