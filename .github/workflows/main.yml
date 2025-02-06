@@ -55,7 +55,7 @@ jobs:
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ec2-user@13.232.65.163
+          ssh -o StrictHostKeyChecking=no -i private_key ec2-user@15.206.160.69
       - name: Checkout main
         uses: actions/checkout@v2
         
@@ -63,7 +63,7 @@ jobs:
         uses: easingthemes/ssh-deploy@main      
         env:
           SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-          REMOTE_HOST: "13.232.65.163"
+          REMOTE_HOST: "15.206.160.69"
           REMOTE_USER: "ec2-user"
           TARGET: "/home/ec2-user"
       - name:  Login to Docker Hub
@@ -74,11 +74,11 @@ jobs:
           chmod 600 key.pem
       - name: Docker Pull
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@13.232.65.163 'sudo docker pull ${{ env.WEBSITE_IMAGE }}:latest'
+          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@15.206.160.69 'sudo docker pull ${{ env.WEBSITE_IMAGE }}:latest'
       - name:  Stop running container
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@13.232.65.163 'sudo docker stop frontend-container || true'
-          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@13.232.65.163 'sudo docker rm frontend-container || true'
+          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@15.206.160.69 'sudo docker stop frontend-container || true'
+          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@15.206.160.69 'sudo docker rm frontend-container || true'
       - name: Run new container
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@13.232.65.163 'sudo docker-compose -f docker-compose-ci.yml up -d'
+          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@15.206.160.69 'sudo docker-compose -f docker-compose-ci.yml up -d'
