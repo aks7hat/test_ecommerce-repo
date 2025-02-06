@@ -8,7 +8,7 @@ const AboutUs = () => {
       <>    
         <div className="about-us-container">
         <header className="about-us-header">
-            <h1>Welcome to AmCart</h1>
+            <h1>Welcome to AmCart Ecommerce Application</h1>
             <p>
             At AmCart, we bring fashion to your fingertips. Our mission is to
             redefine the online shopping experience by offering a wide range of
