@@ -27,7 +27,7 @@ jobs:
           docker build -t ${{secrets.DOCKER_USERNAME}}/amcart-frontend:latest ./Amcart-Frontend/UI
       - name: Push images
         run: |
-           docker push ${{ env.WEBSITE_IMAGE }} || true
+           docker push ${{ env.WEBSITE_IMAGE }}:latest || true
   checking-secrets:
     name: Checking secrets
     runs-on: ubuntu-latest
@@ -55,7 +55,7 @@ jobs:
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ec2-user@54.81.232.44
+          ssh -o StrictHostKeyChecking=no -i private_key ec2-user@13.232.65.163
       - name: Checkout main
         uses: actions/checkout@v2
         
@@ -63,9 +63,9 @@ jobs:
         uses: easingthemes/ssh-deploy@main      
         env:
           SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-          REMOTE_HOST: "54.81.232.44"
+          REMOTE_HOST: "13.232.65.163"
           REMOTE_USER: "ec2-user"
-          TARGET: "/home/ec2-user/Ecommerce"
+          TARGET: "/home/ec2-user"
       - name:  Login to Docker Hub
         run: docker login -u ${{secrets.DOCKER_USERNAME }} -p ${{secrets.DOCKER_PASSWORD }} 
       - name: Set permissions for private key
@@ -74,11 +74,11 @@ jobs:
           chmod 600 key.pem
       - name: Docker Pull
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@54.81.232.44 'sudo docker pull ${{ env.WEBSITE_IMAGE }}:latest'
+          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@13.232.65.163 'sudo docker pull ${{ env.WEBSITE_IMAGE }}:latest'
       - name:  Stop running container
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@54.81.232.44 'sudo docker stop ecommerce-react-ui || true'
-          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@54.81.232.44 'sudo docker rm ecommerce-react-ui || true'
+          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@13.232.65.163 'sudo docker stop frontend-container || true'
+          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@13.232.65.163 'sudo docker rm frontend-container || true'
       - name: Run new container
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@54.81.232.44 'sudo docker-compose -f ./Ecommerce/docker-compose-ci.yml up -d'
+          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@13.232.65.163 'sudo docker-compose -f docker-compose-ci.yml up -d'
