@@ -10,7 +10,7 @@
 FROM maven:3-openjdk-17 AS build
 
 # Add source code to the container
-ADD . /authentication_service_stagging
+ADD ./Authentication-Service /authentication_service_stagging
 
 # Set the working directory
 WORKDIR /authentication_service_stagging
