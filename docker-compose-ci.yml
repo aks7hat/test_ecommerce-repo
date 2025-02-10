@@ -7,8 +7,8 @@ services:
     expose:
       - 3000
     environment:
-      REACT_APP_API_BASE_URL: http://13.127.109.79:8080
-      REACT_APP_ES_BASE_URL: http://13.127.109.79:8082
+      REACT_APP_API_BASE_URL: http://52.66.202.242:8080
+      REACT_APP_ES_BASE_URL: http://52.66.202.242:8082
     ports:
       - '3000:3000'
     networks:
