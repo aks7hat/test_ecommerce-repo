@@ -51,7 +51,7 @@ const Login = () => {
     <div className='px-8 w-full lg:w-[70%]'>
 
       <p className='text-3xl font-bold pb-4 pt-4'>Sign In</p>
-      <GoogleSignIn/>
+      {/* <GoogleSignIn/> */}
       <br />
       {/* <FacebookSignIn/> */}
       <GithubSignIn />
